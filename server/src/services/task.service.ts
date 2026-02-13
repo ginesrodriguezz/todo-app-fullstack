@@ -1,6 +1,12 @@
 import { PrismaClient, TaskStatus } from '@prisma/client';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+    datasources: {
+        db: {
+            url: process.env.DATABASE_URL,
+        },
+    },
+});
 
 export const getAllTasks = async (sortOrder: 'asc' | 'desc' = 'desc') => {
     return await prisma.task.findMany({
