@@ -9,7 +9,11 @@ const TaskList: React.FC = () => {
     const [sortOrder, setSortOrder] = React.useState<'asc' | 'desc'>('desc');
     const { data: tasks, isLoading, isError } = useQuery({
         queryKey: ['tasks', sortOrder],
-        queryFn: () => getTasks(sortOrder),
+        queryFn: async () => {
+            const data = await getTasks(sortOrder);
+            console.log('Fetched tasks:', data); // Debugging
+            return data;
+        },
     });
 
     if (isLoading) {
@@ -61,9 +65,15 @@ const TaskList: React.FC = () => {
                     )}
                 </Button>
             </div>
-            {tasks.map((task) => (
-                <TaskItem key={task.id} task={task} />
-            ))}
+            {Array.isArray(tasks) ? (
+                tasks.map((task) => (
+                    <TaskItem key={task.id} task={task} />
+                ))
+            ) : (
+                <div className="text-red-500">
+                    Error: Unexpected data format received from server.
+                </div>
+            )}
         </div>
     );
 };
